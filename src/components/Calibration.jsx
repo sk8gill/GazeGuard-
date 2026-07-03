@@ -1,0 +1,94 @@
+import { useEffect, useRef, useState } from "react";
+import { estimateHeadPose } from "../tracking/headPose";
+import { estimateEyeMetrics } from "../tracking/eyeMetrics";
+
+const CALIBRATION_MS = 2000;
+
+function buildThresholdsFromBaseline(baseline) {
+  return {
+    yaw: Math.abs(baseline.yawRatio) + 0.2,
+    pitch: Math.abs(baseline.pitchRatio) + 0.2,
+    ear: 0.18, // fairly universal, less need to calibrate
+    horizontalBias: 0.18,
+  };
+}
+
+export default function Calibration({ landmarks, onDone }) {
+  const [secondsLeft, setSecondsLeft] = useState(CALIBRATION_MS / 1000);
+  const samples = useRef([]);
+  const startedAt = useRef(null);
+
+  useEffect(() => {
+    startedAt.current = Date.now();
+
+    const tick = setInterval(() => {
+      const elapsed = Date.now() - startedAt.current;
+      const remaining = Math.max(0, Math.ceil((CALIBRATION_MS - elapsed) / 1000));
+      setSecondsLeft(remaining);
+    }, 200);
+
+    return () => clearInterval(tick);
+  }, []);
+
+  // Collect a sample every time new landmarks arrive, while within the window
+  useEffect(() => {
+    if (!landmarks || !startedAt.current) return;
+    const elapsed = Date.now() - startedAt.current;
+    if (elapsed >= CALIBRATION_MS) return;
+
+    const headPose = estimateHeadPose(landmarks);
+    const eyeMetrics = estimateEyeMetrics(landmarks);
+    samples.current.push({ headPose, eyeMetrics });
+  }, [landmarks]);
+
+  // Finish once the window elapses
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      const collected = samples.current;
+
+      if (collected.length === 0) {
+        // No face was seen during calibration — fall back to generic thresholds
+        onDone({ yaw: 0.25, pitch: 0.25, ear: 0.18, horizontalBias: 0.18 });
+        return;
+      }
+
+      const avg = (arr) => arr.reduce((s, x) => s + x, 0) / arr.length;
+      const baseline = {
+        yawRatio: avg(collected.map((s) => s.headPose.yawRatio)),
+        pitchRatio: avg(collected.map((s) => s.headPose.pitchRatio)),
+        avgHorizontalBias: avg(collected.map((s) => s.eyeMetrics.avgHorizontalBias)),
+      };
+
+      onDone(buildThresholdsFromBaseline(baseline));
+    }, CALIBRATION_MS);
+
+    return () => clearTimeout(timeout);
+  }, [onDone]);
+
+  return (
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "#111",
+        color: "white",
+      }}
+    >
+      <div
+        style={{
+          width: 24,
+          height: 24,
+          borderRadius: "50%",
+          background: "#4da6ff",
+        }}
+      />
+      <p style={{ marginTop: 24 }}>
+        Look at the dot… calibrating ({secondsLeft}s)
+      </p>
+    </div>
+  );
+}
