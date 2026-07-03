@@ -1,0 +1,132 @@
+:root {
+  --void: #10121B;
+  --slate: #1B2032;
+  --slate-2: #232941;
+  --mist: #8B93A7;
+  --paper: #F1EFE9;
+  --lamp: #F2A65A;
+  --lamp-dim: #C97B3B;
+  --alert: #E8604A;
+
+  --font-display: "Fraunces", serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--void);
+  color: var(--paper);
+  font-family: var(--font-body);
+}
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 24px;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mist);
+  margin-bottom: 12px;
+}
+
+h1.display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(32px, 5vw, 56px);
+  margin: 0 0 16px;
+  line-height: 1.05;
+}
+
+p.lede {
+  color: var(--mist);
+  font-size: 16px;
+  max-width: 480px;
+  text-align: center;
+  line-height: 1.5;
+  margin: 0 0 40px;
+}
+
+.btn {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 15px;
+  padding: 14px 28px;
+  border-radius: 100px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-primary {
+  background: var(--lamp);
+  color: var(--void);
+  box-shadow: 0 0 0 0 rgba(242, 166, 90, 0.5);
+}
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 24px rgba(242, 166, 90, 0.35);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--paper);
+  border-color: var(--slate-2);
+}
+.btn-ghost:hover { border-color: var(--mist); }
+
+.card {
+  background: var(--slate);
+  border-radius: 16px;
+  padding: 24px;
+  width: 100%;
+  max-width: 480px;
+}
+
+.focus-ring {
+  position: relative;
+  width: 480px;
+  max-width: 90vw;
+  border-radius: 24px;
+  padding: 6px;
+  transition: box-shadow 0.4s ease;
+}
+.focus-ring.is-focused {
+  box-shadow: 0 0 0 3px var(--lamp), 0 0 40px rgba(242, 166, 90, 0.35);
+}
+.focus-ring.is-distracted {
+  box-shadow: 0 0 0 3px var(--alert), 0 0 40px rgba(232, 96, 74, 0.4);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.75; }
+}
+
+.timer {
+  font-family: var(--font-mono);
+  font-size: 48px;
+  letter-spacing: -0.02em;
+}
+
+.stat-number {
+  font-family: var(--font-mono);
+  font-size: 32px;
+  color: var(--lamp);
+}
+
+.stat-label {
+  color: var(--mist);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
