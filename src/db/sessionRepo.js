@@ -1,4 +1,4 @@
-import { getDB } from "../components/db";
+import { getDB } from "./db";
 
 export async function saveSession(session) {
   const db = await getDB();
