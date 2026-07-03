@@ -4,8 +4,8 @@
   --slate-2: #232941;
   --mist: #8B93A7;
   --paper: #F1EFE9;
-  --lamp: #F2A65A;
-  --lamp-dim: #C97B3B;
+  --lamp: #A78BFA;
+  --lamp-dim: #7C5FD6;
   --alert: #E8604A;
 
   --font-display: "Fraunces", serif;
@@ -101,7 +101,7 @@ p.lede {
   transition: box-shadow 0.4s ease;
 }
 .focus-ring.is-focused {
-  box-shadow: 0 0 0 3px var(--lamp), 0 0 40px rgba(242, 166, 90, 0.35);
+  box-shadow: 0 0 0 3px var(--lamp), 0 0 40px rgba(167, 139, 250, 0.35);
 }
 .focus-ring.is-distracted {
   box-shadow: 0 0 0 3px var(--alert), 0 0 40px rgba(232, 96, 74, 0.4);
