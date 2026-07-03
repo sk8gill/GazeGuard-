@@ -1,7 +1,5 @@
 // tracking/useFaceMesh.js
 import { useEffect, useRef, useState } from "react";
-import { FaceMesh } from "@mediapipe/face_mesh";
-import { Camera } from "@mediapipe/camera_utils";
 
 export function useFaceMesh(videoEl) {
   const [landmarks, setLandmarks] = useState(null);
@@ -10,7 +8,7 @@ export function useFaceMesh(videoEl) {
   useEffect(() => {
     if (!videoEl) return;
 
-    const faceMesh = new FaceMesh({
+    const faceMesh = new window.FaceMesh({
       locateFile: (file) =>
         `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`,
     });
@@ -32,7 +30,7 @@ export function useFaceMesh(videoEl) {
 
     faceMeshRef.current = faceMesh;
 
-    const camera = new Camera(videoEl, {
+    const camera = new window.Camera(videoEl, {
       onFrame: async () => {
         await faceMesh.send({ image: videoEl });
       },

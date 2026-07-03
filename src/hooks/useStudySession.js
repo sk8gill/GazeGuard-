@@ -36,7 +36,7 @@ export function useStudySession(landmarks) {
 
   const finishCalibration = useCallback((thresholds) => {
     thresholdsRef.current = thresholds;
-    focusEngineRef.current = createFocusEngine();
+    focusEngineRef.current = createFocusEngine(thresholds);
     setState((s) => ({
       ...s,
       status: "running",
@@ -123,17 +123,11 @@ export function useStudySession(landmarks) {
     }
 
     // normalize against calibrated thresholds
-    const t = thresholdsRef.current;
-    const normalized = {
-      headPose: {
-        yawRatio: faceDetected ? headPose.yawRatio / (t.yaw || 0.25) * 0.25 : 0,
-        pitchRatio: faceDetected ? headPose.pitchRatio / (t.pitch || 0.25) * 0.25 : 0,
-      },
+    const { isFocused } = focusEngineRef.current.pushFrame({
+      headPose,
       eyeMetrics,
       faceDetected,
-    };
-
-    const { isFocused } = focusEngineRef.current.pushFrame(normalized);
+    });
 
     if (!isFocused && !activeDistractionRef.current && !graceTimerRef.current) {
       // start grace period
