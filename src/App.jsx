@@ -5,6 +5,7 @@ import DistractionOverlay from "./components/DistractionOverlay";
 import InsightsDashboard from "./components/InsightsDashboard";
 import { useFaceMesh } from "./tracking/useFaceMesh";
 import { useStudySession } from "./hooks/useStudySession";
+import FaceMeshCanvas from "./components/FaceMeshCanvas";
 
 function formatTime(totalSec) {
   const min = Math.floor(totalSec / 60).toString().padStart(2, "0");
@@ -24,6 +25,7 @@ function App() {
 
       {/* Camera always runs in the background once mounted */}
       <CameraFeed onVideoReady={setVideoEl} />
+      <FaceMeshCanvas videoEl={videoEl} landmarks={landmarks} />
 
       {/* --- idle: setup screen --- */}
       {session.status === "idle" && (
