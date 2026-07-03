@@ -1,3 +1,5 @@
+import { useEffect, useRef } from "react";
+
 export default function FaceMeshCanvas({ videoEl, landmarks, width = 480, height = 360, showDots = true }) {
   const canvasRef = useRef(null);
 
@@ -21,7 +23,7 @@ export default function FaceMeshCanvas({ videoEl, landmarks, width = 480, height
         ctx.fill();
       });
     }
-  }, [landmarks, videoEl, width, height, showDots]);   
+  }, [landmarks, videoEl, width, height, showDots]);
 
   return (
     <canvas
