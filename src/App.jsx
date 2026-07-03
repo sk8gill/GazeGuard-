@@ -18,6 +18,7 @@ function App() {
   const [plannedMin, setPlannedMin] = useState(25);
   const landmarks = useFaceMesh(videoEl);
   const session = useStudySession(landmarks);
+  const [showDots, setShowDots] = useState(true);
 
   return (
     <div style={{ maxWidth: 700, margin: "0 auto", padding: 24, fontFamily: "system-ui, sans-serif" }}>
@@ -25,7 +26,16 @@ function App() {
 
       {/* Camera always runs in the background once mounted */}
       <CameraFeed onVideoReady={setVideoEl} />
-      <FaceMeshCanvas videoEl={videoEl} landmarks={landmarks} />
+      <FaceMeshCanvas videoEl={videoEl} landmarks={landmarks} showDots={showDots} />
+
+      <label style={{ display: "block", marginTop: 8, fontSize: 14 }}>
+      <input
+        type="checkbox"
+        checked={showDots}
+        onChange={(e) => setShowDots(e.target.checked)}
+      />{" "}
+      Show face tracking dots
+    </label>
 
       {/* --- idle: setup screen --- */}
       {session.status === "idle" && (

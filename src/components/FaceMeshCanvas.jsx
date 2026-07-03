@@ -1,6 +1,4 @@
-import { useEffect, useRef } from "react";
-
-export default function FaceMeshCanvas({ videoEl, landmarks, width = 480, height = 360 }) {
+export default function FaceMeshCanvas({ videoEl, landmarks, width = 480, height = 360, showDots = true }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -9,11 +7,11 @@ export default function FaceMeshCanvas({ videoEl, landmarks, width = 480, height
     const ctx = canvas.getContext("2d");
 
     ctx.save();
-    ctx.scale(-1, 1); // mirror, so it feels like a mirror not a camera
+    ctx.scale(-1, 1);
     ctx.drawImage(videoEl, -width, 0, width, height);
     ctx.restore();
 
-    if (landmarks) {
+    if (landmarks && showDots) {
       ctx.fillStyle = "#4da6ff";
       landmarks.forEach((pt) => {
         const x = width - pt.x * width;
@@ -23,7 +21,7 @@ export default function FaceMeshCanvas({ videoEl, landmarks, width = 480, height
         ctx.fill();
       });
     }
-  }, [landmarks, videoEl, width, height]);
+  }, [landmarks, videoEl, width, height, showDots]);   
 
   return (
     <canvas
