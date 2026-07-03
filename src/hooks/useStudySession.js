@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createFocusEngine } from "../tracking/focusEngine";
 import { estimateHeadPose } from "../tracking/headPose";
 import { estimateEyeMetrics } from "../tracking/eyeMetrics";
+import { saveSession } from "../db/sessionRepo";
 
 const GRACE_PERIOD_MS = 4000;
 
@@ -74,6 +75,29 @@ export function useStudySession(landmarks) {
         const nextElapsed = s.elapsedSec + 1;
         if (nextElapsed >= s.plannedDurationMin * 60) {
           clearInterval(tickIntervalRef.current);
+
+          const totalDistractedSec = s.distractionEvents.reduce(
+            (sum, e) => sum + e.durationSec,
+            0
+          );
+          const avgFocusPercentage =
+            nextElapsed > 0
+              ? ((nextElapsed - totalDistractedSec) / nextElapsed) * 100
+              : 100;
+
+          const completedSession = {
+            startTime: s.startTime,
+            plannedDurationMin: s.plannedDurationMin,
+            actualDurationSec: nextElapsed,
+            distractionCount: s.distractionCount,
+            distractionEvents: s.distractionEvents,
+            avgFocusPercentage,
+          };
+
+          saveSession(completedSession).catch((err) =>
+            console.error("Failed to save session:", err)
+          );
+
           return { ...s, elapsedSec: nextElapsed, status: "complete" };
         }
         return { ...s, elapsedSec: nextElapsed };
