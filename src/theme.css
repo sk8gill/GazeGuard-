@@ -45,6 +45,7 @@ h1.display {
   font-size: clamp(32px, 5vw, 56px);
   margin: 0 0 16px;
   line-height: 1.05;
+  text-align: center;
 }
 
 p.lede {
