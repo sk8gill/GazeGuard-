@@ -107,7 +107,7 @@ export function useStudySession(landmarks) {
             console.error("Failed to save session:", err)
           );
 
-          return { ...s, elapsedSec: nextElapsed, status: "complete" };
+          return { ...s, elapsedSec: nextElapsed, status: "complete", alertVisible: false };
         }
         return { ...s, elapsedSec: nextElapsed };
       });
