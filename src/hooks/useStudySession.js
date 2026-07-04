@@ -4,7 +4,7 @@ import { estimateHeadPose } from "../tracking/headPose";
 import { estimateEyeMetrics } from "../tracking/eyeMetrics";
 import { saveSession } from "../db/sessionRepo";
 
-const GRACE_PERIOD_MS = 4000;
+const GRACE_PERIOD_MS = 3000;
 
 const initialState = {
   status: "idle", // idle | calibrating | running | paused | complete
