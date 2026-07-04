@@ -4,7 +4,7 @@ import { estimateHeadPose } from "../tracking/headPose";
 import { estimateEyeMetrics } from "../tracking/eyeMetrics";
 import { saveSession } from "../db/sessionRepo";
 
-const GRACE_PERIOD_MS = 4000;
+const GRACE_PERIOD_MS = 3000;
 
 const initialState = {
   status: "idle", // idle | calibrating | running | paused | complete
@@ -57,6 +57,15 @@ export function useStudySession(landmarks) {
   }, []);
 
   const reset = useCallback(() => {
+    clearInterval(tickIntervalRef.current);
+    clearTimeout(graceTimerRef.current);
+    activeDistractionRef.current = null;
+    focusEngineRef.current = null;
+    thresholdsRef.current = null;
+    setState(initialState);
+  }, []);
+
+  const cancel = useCallback(() => {
     clearInterval(tickIntervalRef.current);
     clearTimeout(graceTimerRef.current);
     activeDistractionRef.current = null;
@@ -171,5 +180,6 @@ export function useStudySession(landmarks) {
     pause,
     resume,
     reset,
+    cancel,
   };
 }

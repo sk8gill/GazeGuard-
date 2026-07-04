@@ -30,7 +30,13 @@ export default function FaceMeshCanvas({ videoEl, landmarks, width = 480, height
       ref={canvasRef}
       width={width}
       height={height}
-      style={{ borderRadius: 8, background: "#000" }}
+      style={{
+        borderRadius: 8,
+        background: "#000",
+        display: "block",
+        width: "100%",
+        height: "auto",
+      }}
     />
   );
 }

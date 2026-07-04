@@ -81,24 +81,36 @@ export default function SessionPage() {
       )}
 
       {(session.status === "running" || session.status === "paused") && (
-        <>
-          <div className={ringClass}>
-            <FaceMeshCanvas videoEl={videoEl} landmarks={landmarks} showDots={showDots} />
-          </div>
-          <div className="timer" style={{ marginTop: 24 }}>
-            {formatTime(session.elapsedSec)}
-          </div>
-          <p style={{ color: "var(--mist)" }}>
-            of {formatTime(session.plannedDurationMin * 60)} · {session.distractionCount} distraction{session.distractionCount === 1 ? "" : "s"}
-          </p>
-          <button
-            className="btn btn-ghost"
-            onClick={session.status === "running" ? session.pause : session.resume}
-          >
-            {session.status === "running" ? "Pause" : "Resume"}
-          </button>
-        </>
-      )}
+  <>
+    <div className={ringClass}>
+      <FaceMeshCanvas videoEl={videoEl} landmarks={landmarks} showDots={showDots} />
+    </div>
+    <div className="timer" style={{ marginTop: 24 }}>
+      {formatTime(session.elapsedSec)}
+    </div>
+    <p style={{ color: "var(--mist)" }}>
+      of {formatTime(session.plannedDurationMin * 60)} · {session.distractionCount} distraction{session.distractionCount === 1 ? "" : "s"}
+    </p>
+    <div style={{ display: "flex", gap: 12, marginTop: 8 }}>
+      <button
+        className="btn btn-ghost"
+        onClick={session.status === "running" ? session.pause : session.resume}
+      >
+        {session.status === "running" ? "Pause" : "Resume"}
+      </button>
+      <button
+        className="btn btn-ghost"
+        onClick={() => {
+          if (window.confirm("Cancel this session? Your progress won't be saved.")) {
+            session.cancel();
+          }
+        }}
+      >
+        Cancel session
+      </button>
+    </div>
+  </>
+)}
 
       <DistractionOverlay visible={session.alertVisible} />
 
