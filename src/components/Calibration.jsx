@@ -2,7 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import { estimateHeadPose } from "../tracking/headPose";
 import { estimateEyeMetrics } from "../tracking/eyeMetrics";
 
-const CALIBRATION_MS = 2000;
+const CALIBRATION_MS = 5000;
+
+function median(arr) {
+  const sorted = [...arr].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+}
 
 function buildThresholdsFromBaseline(baseline) {
   return {
@@ -52,11 +58,10 @@ export default function Calibration({ landmarks, onDone }) {
         return;
       }
 
-      const avg = (arr) => arr.reduce((s, x) => s + x, 0) / arr.length;
       const baseline = {
-        yawRatio: avg(collected.map((s) => s.headPose.yawRatio)),
-        pitchRatio: avg(collected.map((s) => s.headPose.pitchRatio)),
-        avgHorizontalBias: avg(collected.map((s) => s.eyeMetrics.avgHorizontalBias)),
+        yawRatio: median(collected.map((s) => s.headPose.yawRatio)),
+        pitchRatio: median(collected.map((s) => s.headPose.pitchRatio)),
+        avgHorizontalBias: median(collected.map((s) => s.eyeMetrics.avgHorizontalBias)),
       };
 
       onDone(buildThresholdsFromBaseline(baseline));
