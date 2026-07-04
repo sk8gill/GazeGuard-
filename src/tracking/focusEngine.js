@@ -15,16 +15,19 @@ export function createFocusEngine(thresholds) {
       recentFrames.reduce((s, f) => s + f.headPose.pitchRatio, 0) / recentFrames.length;
     const smoothedEAR =
       recentFrames.reduce((s, f) => s + f.eyeMetrics.avgEAR, 0) / recentFrames.length;
-    const smoothedBias =
+    const smoothedHBias =
       recentFrames.reduce((s, f) => s + f.eyeMetrics.avgHorizontalBias, 0) / recentFrames.length;
+    const smoothedVBias =
+      recentFrames.reduce((s, f) => s + f.eyeMetrics.avgVerticalBias, 0) / recentFrames.length;
 
     let focused = false;
     if (faceDetected) {
       const yawOk = Math.abs(smoothedYaw) < thresholds.yaw;
       const pitchOk = Math.abs(smoothedPitch) < thresholds.pitch;
       const eyesOpen = smoothedEAR > thresholds.ear;
-      const eyesForward = Math.abs(smoothedBias - 0.5) < thresholds.horizontalBias;
-      focused = yawOk && pitchOk && eyesOpen && eyesForward;
+      const eyesForwardH = Math.abs(smoothedHBias - 0.5) < thresholds.horizontalBias;
+      const eyesForwardV = Math.abs(smoothedVBias - 0.5) < thresholds.verticalBias;
+      focused = yawOk && pitchOk && eyesOpen && eyesForwardH && eyesForwardV;
     }
 
     window.push(focused);

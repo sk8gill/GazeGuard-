@@ -14,8 +14,9 @@ function buildThresholdsFromBaseline(baseline) {
   return {
     yaw: Math.abs(baseline.yawRatio) + 0.2,
     pitch: Math.abs(baseline.pitchRatio) + 0.2,
-    ear: 0.18, // fairly universal, less need to calibrate
+    ear: 0.18,
     horizontalBias: 0.18,
+    verticalBias: 0.15, // phone-in-lap glances are usually a bigger vertical swing
   };
 }
 
@@ -36,7 +37,6 @@ export default function Calibration({ landmarks, onDone }) {
     return () => clearInterval(tick);
   }, []);
 
-  // Collect a sample every time new landmarks arrive, while within the window
   useEffect(() => {
     if (!landmarks || !startedAt.current) return;
     const elapsed = Date.now() - startedAt.current;
@@ -47,14 +47,12 @@ export default function Calibration({ landmarks, onDone }) {
     samples.current.push({ headPose, eyeMetrics });
   }, [landmarks]);
 
-  // Finish once the window elapses
   useEffect(() => {
     const timeout = setTimeout(() => {
       const collected = samples.current;
 
       if (collected.length === 0) {
-        // No face was seen during calibration — fall back to generic thresholds
-        onDone({ yaw: 0.25, pitch: 0.25, ear: 0.18, horizontalBias: 0.18 });
+        onDone({ yaw: 0.25, pitch: 0.25, ear: 0.18, horizontalBias: 0.18, verticalBias: 0.15 });
         return;
       }
 

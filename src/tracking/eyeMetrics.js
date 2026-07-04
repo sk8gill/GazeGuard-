@@ -25,6 +25,15 @@ function irisBias(landmarks, eye, irisIdx) {
   return (iris.x - left.x) / eyeWidth;
 }
 
+function irisVerticalBias(landmarks, eye, irisIdx) {
+  const iris = landmarks[irisIdx];
+  const top = landmarks[eye.top];
+  const bottom = landmarks[eye.bottom];
+  const eyeHeight = bottom.y - top.y;
+  // 0 = looking up, 1 = looking down, 0.5 = center
+  return (iris.y - top.y) / eyeHeight;
+}
+
 export function estimateEyeMetrics(landmarks) {
   const earL = eyeAspectRatio(landmarks, LEFT_EYE);
   const earR = eyeAspectRatio(landmarks, RIGHT_EYE);
@@ -34,5 +43,9 @@ export function estimateEyeMetrics(landmarks) {
   const biasR = irisBias(landmarks, RIGHT_EYE, RIGHT_IRIS);
   const avgHorizontalBias = (biasL + biasR) / 2;
 
-  return { avgEAR, avgHorizontalBias };
+  const vBiasL = irisVerticalBias(landmarks, LEFT_EYE, LEFT_IRIS);
+  const vBiasR = irisVerticalBias(landmarks, RIGHT_EYE, RIGHT_IRIS);
+  const avgVerticalBias = (vBiasL + vBiasR) / 2;
+
+  return { avgEAR, avgHorizontalBias, avgVerticalBias };
 }

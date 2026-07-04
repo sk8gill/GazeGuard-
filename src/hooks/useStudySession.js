@@ -138,6 +138,8 @@ export function useStudySession(landmarks) {
       faceDetected,
     });
 
+    console.log(`vBias=${eyeMetrics.avgVerticalBias?.toFixed(3)} hBias=${eyeMetrics.avgHorizontalBias.toFixed(3)}`);
+
     if (!isFocused && !activeDistractionRef.current && !graceTimerRef.current) {
       // start grace period
       graceTimerRef.current = setTimeout(() => {
