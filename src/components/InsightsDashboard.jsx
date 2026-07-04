@@ -78,13 +78,21 @@ export default function InsightsDashboard() {
       <h2>Insights</h2>
 
       {sessions.length >= 2 && (
-        <p>
-          Your average focus over your last {Math.min(5, sessions.length)}{" "}
-          sessions is <strong>{recentAvg.toFixed(1)}%</strong>, {direction}{" "}
-          {Math.abs(deltaPct).toFixed(1)}% compared to your previous{" "}
-          {Math.min(5, Math.max(0, sessions.length - 5))}.
-        </p>
-      )}
+  sessions.length > 5 ? (
+    <p>
+      Your average focus over your last {Math.min(5, sessions.length)}{" "}
+      sessions is <strong>{recentAvg.toFixed(1)}%</strong>, {direction}{" "}
+      {Math.abs(deltaPct).toFixed(1)}% compared to your previous{" "}
+      {Math.min(5, Math.max(0, sessions.length - 5))}.
+    </p>
+  ) : (
+    <p>
+      Your average focus so far is <strong>{recentAvg.toFixed(1)}%</strong>{" "}
+      across {sessions.length} session{sessions.length === 1 ? "" : "s"}.
+      Complete a few more to start seeing trend comparisons.
+    </p>
+  )
+)}
 
       <h3>Focus % over time</h3>
       <ResponsiveContainer width="100%" height={300}>
