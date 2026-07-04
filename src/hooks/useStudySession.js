@@ -107,7 +107,7 @@ export function useStudySession(landmarks) {
             console.error("Failed to save session:", err)
           );
 
-          return { ...s, elapsedSec: nextElapsed, status: "complete" };
+          return { ...s, elapsedSec: nextElapsed, status: "complete", alertVisible: false };
         }
         return { ...s, elapsedSec: nextElapsed };
       });
@@ -137,6 +137,8 @@ export function useStudySession(landmarks) {
       eyeMetrics,
       faceDetected,
     });
+
+    console.log(`vBias=${eyeMetrics.avgVerticalBias?.toFixed(3)} hBias=${eyeMetrics.avgHorizontalBias.toFixed(3)}`);
 
     if (!isFocused && !activeDistractionRef.current && !graceTimerRef.current) {
       // start grace period

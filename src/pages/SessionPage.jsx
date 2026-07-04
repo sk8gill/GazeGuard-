@@ -112,8 +112,7 @@ export default function SessionPage() {
   </>
 )}
 
-      <DistractionOverlay visible={session.alertVisible} />
-
+    <DistractionOverlay visible={session.alertVisible && session.status === "running"} />
       {session.status === "complete" && (
         <>
           <p className="eyebrow">Session complete</p>

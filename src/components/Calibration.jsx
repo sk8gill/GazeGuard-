@@ -2,14 +2,21 @@ import { useEffect, useRef, useState } from "react";
 import { estimateHeadPose } from "../tracking/headPose";
 import { estimateEyeMetrics } from "../tracking/eyeMetrics";
 
-const CALIBRATION_MS = 2000;
+const CALIBRATION_MS = 5000;
+
+function median(arr) {
+  const sorted = [...arr].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+}
 
 function buildThresholdsFromBaseline(baseline) {
   return {
     yaw: Math.abs(baseline.yawRatio) + 0.2,
     pitch: Math.abs(baseline.pitchRatio) + 0.2,
-    ear: 0.18, // fairly universal, less need to calibrate
+    ear: 0.18,
     horizontalBias: 0.18,
+    verticalBias: 0.15, // phone-in-lap glances are usually a bigger vertical swing
   };
 }
 
@@ -30,7 +37,6 @@ export default function Calibration({ landmarks, onDone }) {
     return () => clearInterval(tick);
   }, []);
 
-  // Collect a sample every time new landmarks arrive, while within the window
   useEffect(() => {
     if (!landmarks || !startedAt.current) return;
     const elapsed = Date.now() - startedAt.current;
@@ -41,22 +47,19 @@ export default function Calibration({ landmarks, onDone }) {
     samples.current.push({ headPose, eyeMetrics });
   }, [landmarks]);
 
-  // Finish once the window elapses
   useEffect(() => {
     const timeout = setTimeout(() => {
       const collected = samples.current;
 
       if (collected.length === 0) {
-        // No face was seen during calibration — fall back to generic thresholds
-        onDone({ yaw: 0.25, pitch: 0.25, ear: 0.18, horizontalBias: 0.18 });
+        onDone({ yaw: 0.25, pitch: 0.25, ear: 0.18, horizontalBias: 0.18, verticalBias: 0.15 });
         return;
       }
 
-      const avg = (arr) => arr.reduce((s, x) => s + x, 0) / arr.length;
       const baseline = {
-        yawRatio: avg(collected.map((s) => s.headPose.yawRatio)),
-        pitchRatio: avg(collected.map((s) => s.headPose.pitchRatio)),
-        avgHorizontalBias: avg(collected.map((s) => s.eyeMetrics.avgHorizontalBias)),
+        yawRatio: median(collected.map((s) => s.headPose.yawRatio)),
+        pitchRatio: median(collected.map((s) => s.headPose.pitchRatio)),
+        avgHorizontalBias: median(collected.map((s) => s.eyeMetrics.avgHorizontalBias)),
       };
 
       onDone(buildThresholdsFromBaseline(baseline));
