@@ -65,6 +65,15 @@ export function useStudySession(landmarks) {
     setState(initialState);
   }, []);
 
+  const cancel = useCallback(() => {
+    clearInterval(tickIntervalRef.current);
+    clearTimeout(graceTimerRef.current);
+    activeDistractionRef.current = null;
+    focusEngineRef.current = null;
+    thresholdsRef.current = null;
+    setState(initialState);
+  }, []);
+
   // --- elapsed timer ---
 
   useEffect(() => {
@@ -171,5 +180,6 @@ export function useStudySession(landmarks) {
     pause,
     resume,
     reset,
+    cancel,
   };
 }
